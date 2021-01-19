@@ -1,42 +1,129 @@
-import { Link } from "gatsby"
-import PropTypes from "prop-types"
-import React from "react"
+import { Link, useStaticQuery, graphql } from "gatsby"
+import React, { useState, useEffect } from "react"
+import Img from "gatsby-image"
+import Container from "./container"
+import styled, { css } from "styled-components/macro"
 
-const Header = ({ siteTitle }) => (
-  <header
-    style={{
-      background: `rebeccapurple`,
-      marginBottom: `1.45rem`,
-    }}
-  >
-    <div
-      style={{
-        margin: `0 auto`,
-        maxWidth: 960,
-        padding: `1.45rem 1.0875rem`,
-      }}
-    >
-      <h1 style={{ margin: 0 }}>
-        <Link
-          to="/"
-          style={{
-            color: `white`,
-            textDecoration: `none`,
-          }}
-        >
-          {siteTitle}
+const StyledHeader = styled.header`
+  display: flex;
+  justify-content: space-between;
+  margin: "0 auto";
+  padding: 24px 0px 16px;
+
+  a {
+    text-decoration: none;
+  }
+`
+
+const LogoWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  color: white;
+
+  &:hover {
+    opacity: 0.7;
+  }
+`
+
+const imgStyles = css`
+  filter: invert(100%) sepia(100%) saturate(2%) hue-rotate(114deg)
+    brightness(107%) contrast(100%);
+  width: 50px;
+  margin-bottom: 4px;
+`
+
+const Figure = styled.figure`
+  margin: 0;
+  margin-right: 1rem;
+`
+
+const containerStyles = css`
+  position: fixed;
+  z-index: 500;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+`
+
+const LogoTitle = styled.p`
+  font-size: 1rem;
+  letter-spacing: 1px;
+  margin-bottom: 0;
+`
+
+const Nav = styled.nav`
+  display: flex;
+  z-index: 2;
+
+  ul {
+    display: flex;
+    align-items: flex-end;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-left: 8px;
+      margin-right: 8px;
+    }
+
+    p {
+      color: white;
+      margin: 0;
+
+      :hover {
+        opacity: 0.7;
+      }
+    }
+  }
+`
+
+const Header = () => {
+  const data = useStaticQuery(graphql`
+    query HeaderQuery {
+      contentfulAsset(title: { eq: "logo" }) {
+        title
+        sizes(quality: 100, maxWidth: 50) {
+          ...GatsbyContentfulSizes_withWebp
+        }
+      }
+    }
+  `)
+
+  return (
+    <Container additionalStyles={containerStyles}>
+      <StyledHeader>
+        <Link to="/">
+          <LogoWrapper>
+            <Figure>
+              <Img css={imgStyles} fluid={data.contentfulAsset.sizes}></Img>
+            </Figure>
+            <LogoTitle>Mildegruppen</LogoTitle>
+          </LogoWrapper>
         </Link>
-      </h1>
-    </div>
-  </header>
-)
-
-Header.propTypes = {
-  siteTitle: PropTypes.string,
-}
-
-Header.defaultProps = {
-  siteTitle: ``,
+        <Nav>
+          <ul>
+            <li>
+              <Link to="/">
+                <p>Item 1</p>
+              </Link>
+            </li>
+            <li>
+              <Link to="/">
+                <p>Item 2</p>
+              </Link>
+            </li>
+            <li>
+              <Link to="/">
+                <p>Item 3</p>
+              </Link>
+            </li>
+          </ul>
+        </Nav>
+      </StyledHeader>
+    </Container>
+  )
 }
 
 export default Header
