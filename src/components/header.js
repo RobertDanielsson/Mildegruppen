@@ -76,6 +76,21 @@ const Nav = styled.nav`
         opacity: 0.7;
       }
     }
+
+    p::after {
+      content: "";
+      display: block;
+      margin: auto;
+      height: 2px;
+      width: 0px;
+      background: white;
+      transition: width 0.3s ease, background-color 0.5s ease;
+    }
+
+    p:hover::after {
+      width: 100%;
+      background: #6ec1e4;
+    }
   }
 `
 
