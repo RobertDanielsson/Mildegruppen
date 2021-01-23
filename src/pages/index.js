@@ -295,17 +295,17 @@ const IndexPage = ({ data }) => {
       }
     }
 
-    if (isInViewport(servicesIntro.current)) {
-      if (!servicesIntro.current.classList.contains("animate__fadeIn")) {
-        servicesIntro.current.classList.remove("invisible")
-        servicesIntro.current.classList.add("animate__fadeIn")
-      }
+    if (
+      isInViewport(servicesIntro.current) &&
+      !servicesIntro.current.classList.contains("animate__fadeIn")
+    ) {
+      servicesIntro.current.classList.remove("invisible")
+      servicesIntro.current.classList.add("animate__fadeIn")
     }
   }
 
   const isInViewport = element => {
     const rect = element.getBoundingClientRect()
-    console.log(rect.top)
     return rect.top <= 300
   }
 
