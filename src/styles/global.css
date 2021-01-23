@@ -29,3 +29,14 @@ h4 {
 .blue-bottom-border {
   border-bottom: 2px solid #6ec1e4;
 }
+
+.invisible {
+  position: relative;
+  left: -5000px;
+}
+
+.stickyVideo {
+  position: fixed !important;
+  top: -90vh !important;
+  z-index: 1 !important;
+}

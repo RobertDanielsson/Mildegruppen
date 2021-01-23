@@ -99,8 +99,8 @@ const Header = () => {
     query HeaderQuery {
       contentfulAsset(title: { eq: "logo" }) {
         title
-        sizes(quality: 100, maxWidth: 50) {
-          ...GatsbyContentfulSizes_withWebp
+        fluid(quality: 100, maxWidth: 50) {
+          ...GatsbyContentfulFluid_withWebp
         }
       }
     }
@@ -112,7 +112,7 @@ const Header = () => {
         <Link to="/">
           <LogoWrapper>
             <Figure>
-              <Img css={imgStyles} fluid={data.contentfulAsset.sizes}></Img>
+              <Img css={imgStyles} fluid={data.contentfulAsset.fluid}></Img>
             </Figure>
             <LogoTitle>Mildegruppen</LogoTitle>
           </LogoWrapper>

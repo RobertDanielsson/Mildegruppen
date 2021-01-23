@@ -49,12 +49,6 @@ const BlurVideo = styled.div`
   z-index: -1;
 `
 
-const stickyVideo = css`
-  position: fixed;
-  top: -90vh;
-  z-index: 1;
-`
-
 const Header = styled.header`
   display: flex;
   height: 100vh;
@@ -92,7 +86,7 @@ const AnimatedSpan = styled.span`
   text-transform: lowercase;
 `
 
-const AnimatedSpanWrapper = styled.div`
+const AnimatedSpanWrapper = styled.span`
   width: 301px;
   margin-left: 0.75rem;
 `
@@ -120,7 +114,7 @@ const ServicesIntroTitle = styled.h2`
   font-family: "Playfair Display", serif;
   text-align: center;
   font-weight: 900;
-  font-size: 4rem;
+  font-size: 3rem;
   margin-bottom: 20px;
 `
 
@@ -128,7 +122,7 @@ const ServicesIntroList = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-  max-width: 700px;
+  // max-width: 800px;
   margin: 50px 0;
 `
 
@@ -136,7 +130,7 @@ const ServiceIntro = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 25px 60px;
+  padding: 25px 50px;
   color: #808080;
 
   .icon {
@@ -172,25 +166,27 @@ const ServiceIntro = styled.div`
   }
 `
 
+const texts = [
+  "Avlopp",
+  "Rivning",
+  "Asbest",
+  "Relining",
+  "Spolning",
+  "Filmning",
+  "Bilning",
+  "Betonghåltagning",
+  "Betongsågning",
+  "Diamantslipning",
+  "Asbestsanering",
+  "Asbestprovtagning",
+]
+
 const IndexPage = ({ data }) => {
   console.log("data", data)
-
-  const [videoStyle, setVideoStyle] = useState("")
   const heroTitle = useRef(null)
-  const texts = [
-    "Avlopp",
-    "Rivning",
-    "Asbest",
-    "Relining",
-    "Spolning",
-    "Filmning",
-    "Bilning",
-    "Betonghåltagning",
-    "Betongsågning",
-    "Diamantslipning",
-    "Asbestsanering",
-    "Asbestprovtagning",
-  ]
+  const servicesIntro = useRef(null)
+  const blurRef = useRef(null)
+  const videoRef = useRef(null)
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll)
@@ -234,20 +230,43 @@ const IndexPage = ({ data }) => {
   }
 
   const handleScroll = () => {
+    //Adds classes to stick video to top as header background
     if (window.pageYOffset > document.documentElement.clientHeight * 0.9) {
-      if (videoStyle === "") {
-        setVideoStyle(stickyVideo)
+      if (!videoRef.current.classList.contains("stickyVideo")) {
+        videoRef.current.classList.add("stickyVideo")
+        blurRef.current.classList.add("stickyVideo")
       }
     } else {
-      setVideoStyle("")
+      if (videoRef.current.classList.contains("stickyVideo")) {
+        videoRef.current.classList.remove("stickyVideo")
+        blurRef.current.classList.remove("stickyVideo")
+      }
     }
+
+    if (isInViewport(servicesIntro.current)) {
+      if (!servicesIntro.current.classList.contains("animate__fadeIn")) {
+        servicesIntro.current.classList.remove("invisible")
+        servicesIntro.current.classList.add("animate__fadeIn")
+      }
+    }
+  }
+
+  const isInViewport = element => {
+    const rect = element.getBoundingClientRect()
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <=
+        (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    )
   }
 
   return (
     <Layout>
       <GridContainer>
         <Video
-          css={videoStyle}
+          ref={videoRef}
           playsinline
           autoPlay
           muted
@@ -255,10 +274,11 @@ const IndexPage = ({ data }) => {
           id="bgvid"
           src={backgroundVideo}
           type="video/mp4"
+          poster={data.poster.fluid.src}
         ></Video>
-        <BlurVideo css={videoStyle}></BlurVideo>
+        <BlurVideo ref={blurRef}></BlurVideo>
         <Header>
-          <StyledIntroImg fluid={data.contentfulAsset.sizes}></StyledIntroImg>
+          <StyledIntroImg fluid={data.title.fluid}></StyledIntroImg>
           <HeroTitle>
             Behöver ni hjälp med{" "}
             <AnimatedSpanWrapper>
@@ -272,47 +292,69 @@ const IndexPage = ({ data }) => {
       </GridContainer>
 
       <Services>
-        <ServicesIntroSection className="serviceSection animate__animated animate__fadeIn ">
+        <ServicesIntroSection
+          ref={servicesIntro}
+          className="serviceSection animate__animated"
+        >
           <ServicesIntroTitle>Våra tjänster</ServicesIntroTitle>
           <p className="servicesIntro">Vi håller en hög standard.</p>
           <p className="servicesIntro">Detta erbjuder vi er:</p>
           <ServicesIntroList>
-            <ServiceIntro>
-              <FontAwesomeIcon icon={faShower} className="icon" size="4x" />
-              <h2>Avlopp</h2>
-              <ul>
-                <li>Relning</li>
-                <li>Spolning</li>
-                <li>Filmning</li>
-              </ul>
-            </ServiceIntro>
-            <ServiceIntro>
-              <FontAwesomeIcon icon={faHammer} className="icon" size="4x" />
-              <h2>Rivning</h2>
-              <ul>
-                <li>Relning</li>
-                <li>Spolning</li>
-                <li>Filmning</li>
-                <li>Spolning</li>
-                <li>Filmning</li>
-              </ul>
-            </ServiceIntro>
-            <ServiceIntro>
-              <FontAwesomeIcon
-                icon={faShieldVirus}
-                className="icon"
-                size="4x"
-              />
-              <h2>Asbest</h2>
-              <ul>
-                <li>Relning</li>
-                <li>Spolning</li>
-              </ul>
-            </ServiceIntro>
+            {data.services.nodes.map((service, i) => (
+              <ServiceIntro key={service.title}>
+                {/* <a href={`#${service.title}`}> */}
+                <h2>{service.title}</h2>
+                <ul>
+                  {service.serviceList.map((listItem, i) => (
+                    <li key={listItem}>{listItem}</li>
+                  ))}
+                </ul>
+                {/* </a> */}
+              </ServiceIntro>
+            ))}
           </ServicesIntroList>
         </ServicesIntroSection>
 
-        <section
+        {data.services.nodes.map(service => (
+          <section
+            css={`
+              background-color: #222c2a;
+              color: white;
+            `}
+            className="serviceSection"
+          >
+            <Container
+              additionalStyles={`
+              display: flex;
+              justify-content: space-between;
+            `}
+            >
+              <figure
+                css={`
+                  width: 45%;
+                `}
+              >
+                <img src={Image}></img>
+              </figure>
+              <div
+                css={`
+                  width: 50%;
+
+                  h3 {
+                    margin-top: -4px;
+                    font-size: 2rem;
+                    font-weight: 300;
+                  }
+                `}
+              >
+                <h3 id={service.title}>{service.title}</h3>
+                <p>{service.description.raw}</p>
+              </div>
+            </Container>
+          </section>
+        ))}
+
+        {/* <section
           css={`
             background-color: #222c2a;
             color: white;
@@ -434,7 +476,7 @@ const IndexPage = ({ data }) => {
               </p>
             </div>
           </Container>
-        </section>
+        </section> */}
       </Services>
     </Layout>
   )
@@ -456,10 +498,30 @@ export default IndexPage
 
 export const query = graphql`
   query indexQuery {
-    contentfulAsset(title: { eq: "milde-title" }) {
+    title: contentfulAsset(title: { eq: "milde-title" }) {
       title
-      sizes(quality: 100) {
-        ...GatsbyContentfulSizes_withWebp
+      fluid(quality: 100) {
+        ...GatsbyContentfulFluid_withWebp
+      }
+    }
+    poster: contentfulAsset(title: { eq: "poster" }) {
+      title
+      fluid(quality: 100) {
+        src
+      }
+    }
+    video: contentfulAsset(title: { eq: "backgroundvideo" }) {
+      fluid(quality: 100) {
+        src
+      }
+    }
+    services: allContentfulTjanst {
+      nodes {
+        title
+        serviceList
+        description {
+          raw
+        }
       }
     }
   }
