@@ -26,6 +26,7 @@ module.exports = {
         accessToken: process.env.GATSBY_CONTENTFUL_ACCESS_TOKEN,
       },
     },
+    `@contentful/gatsby-transformer-contentful-richtext`,
     // {
     //   resolve: `gatsby-plugin-manifest`,
     //   options: {

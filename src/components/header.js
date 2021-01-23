@@ -50,6 +50,7 @@ const LogoTitle = styled.p`
   font-size: 1rem;
   letter-spacing: 1px;
   margin-bottom: 0;
+  color: white;
 `
 
 const Nav = styled.nav`
@@ -90,6 +91,10 @@ const Nav = styled.nav`
     p:hover::after {
       width: 100%;
       background: #6ec1e4;
+    }
+
+    @media (max-width: 900px) {
+      display: none;
     }
   }
 `

@@ -8,14 +8,20 @@ import styled, { css } from "styled-components/macro"
 import Container from "../components/container"
 import "animate.css"
 import size from "../components/utils/breakpoints"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import {
-  faHammer,
-  faShieldVirus,
-  faShower,
-} from "@fortawesome/free-solid-svg-icons"
-
 import Img from "gatsby-image"
+import { renderRichText } from "gatsby-source-contentful/rich-text"
+import { BLOCKS, INLINES } from "@contentful/rich-text-types"
+
+const options = {
+  renderNode: {
+    [INLINES.ENTRY_HYPERLINK]: ({
+      data: {
+        target: { slug, title },
+      },
+    }) => <Link to={slug}>{title}</Link>,
+    [BLOCKS.EMBEDDED_ASSET]: node => <Img {...node.data.target} />,
+  },
+}
 
 const Video = styled.video`
   z-index: -1;
@@ -61,7 +67,8 @@ const Header = styled.header`
 
 const StyledIntroImg = styled(Img)`
   margin-bottom: 2rem;
-  width: 500px;
+  max-width: 500px;
+  width: 90%;
 `
 
 const GridContainer = styled.div`
@@ -76,9 +83,17 @@ const GridContainer = styled.div`
 
 const HeroTitle = styled.p`
   display: flex;
-  font-size: 32px;
+  font-size: 2rem;
   font-weight: 700;
   margin-left: 10rem;
+  color: white;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    margin-left: 0;
+    text-align: center;
+    font-size: 1.75rem;
+  }
 `
 
 const AnimatedSpan = styled.span`
@@ -100,13 +115,17 @@ const ServicesIntroSection = styled.section`
     color: #808080;
     margin: 0;
   }
-
-  border-bottom: 1px solid #dcdcdc;
 `
 
 const Services = styled.div`
   .serviceSection {
     padding: 100px 0;
+  }
+
+  @media (max-width: 900px) {
+    .serviceSection {
+      padding: 50px 0;
+    }
   }
 `
 
@@ -122,8 +141,16 @@ const ServicesIntroList = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-  // max-width: 800px;
   margin: 50px 0;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    margin: 0;
+
+    li {
+      margin-left: 10px;
+    }
+  }
 `
 
 const ServiceIntro = styled.div`
@@ -166,20 +193,45 @@ const ServiceIntro = styled.div`
   }
 `
 
-const texts = [
-  "Avlopp",
-  "Rivning",
-  "Asbest",
-  "Relining",
-  "Spolning",
-  "Filmning",
-  "Bilning",
-  "Betonghåltagning",
-  "Betongsågning",
-  "Diamantslipning",
-  "Asbestsanering",
-  "Asbestprovtagning",
-]
+const ServiceListItem = styled.span`
+  position: relative;
+  left: -10px;
+`
+
+const ServiceFigure = styled.figure`
+  max-height: 400px;
+  overflow: hidden;
+`
+
+const ServiceTitle = styled.h3`
+  margin-top: -4px;
+  font-size: 2rem;
+  font-weight: 300;
+  display: inline-block;
+`
+
+const serviceContainerStyles = css`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 3rem;
+  grid-template-areas: "left right";
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    grid-gap: 0;
+    grid-template-areas: unset;
+
+    .serviceDescription {
+      order: 1;
+      grid-area: unset;
+    }
+
+    .serviceFigure {
+      order: 2;
+      grid-area: unset;
+    }
+  }
+`
 
 const IndexPage = ({ data }) => {
   console.log("data", data)
@@ -198,11 +250,11 @@ const IndexPage = ({ data }) => {
   let itemIndex = 0
 
   const handleHero = element => {
-    const numberOfItems = texts.length
+    const numberOfItems = data.serviceList.service.length
 
     if (element.classList.contains("animate__fadeOutDown")) {
       itemIndex = itemIndex == numberOfItems - 1 ? 0 : ++itemIndex
-      element.textContent = texts[itemIndex] + "?"
+      element.textContent = data.serviceList.service[itemIndex] + "?"
       element.classList.remove("animate__fadeOutDown")
       element.classList.add("animate__fadeInDown")
 
@@ -217,7 +269,7 @@ const IndexPage = ({ data }) => {
       !element.classList.contains("animate__fadeOutDown") &&
       !element.classList.contains("animate__fadeInDown")
     ) {
-      element.textContent = texts[itemIndex] + "?"
+      element.textContent = data.serviceList.service[itemIndex] + "?"
       element.classList.add("animate__fadeInDown")
       setTimeout(() => {
         element.classList.remove("animate__fadeInDown")
@@ -253,13 +305,8 @@ const IndexPage = ({ data }) => {
 
   const isInViewport = element => {
     const rect = element.getBoundingClientRect()
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <=
-        (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    )
+    console.log(rect.top)
+    return rect.top <= 300
   }
 
   return (
@@ -272,19 +319,22 @@ const IndexPage = ({ data }) => {
           muted
           loop
           id="bgvid"
-          src={backgroundVideo}
+          src={data.video.file.url}
           type="video/mp4"
           poster={data.poster.fluid.src}
         ></Video>
         <BlurVideo ref={blurRef}></BlurVideo>
-        <Header>
-          <StyledIntroImg fluid={data.title.fluid}></StyledIntroImg>
+        <Header className="animate__animated animate__fadeIn">
+          <StyledIntroImg
+            placeholderStyle={{ visibility: "hidden" }}
+            fluid={data.title.fluid}
+          ></StyledIntroImg>
           <HeroTitle>
             Behöver ni hjälp med{" "}
             <AnimatedSpanWrapper>
               <AnimatedSpan
                 ref={heroTitle}
-                className="animate__animated animate__faster blue-bottom-border"
+                className="animate__animated animate__faster bbb"
               ></AnimatedSpan>
             </AnimatedSpanWrapper>
           </HeroTitle>
@@ -294,7 +344,7 @@ const IndexPage = ({ data }) => {
       <Services>
         <ServicesIntroSection
           ref={servicesIntro}
-          className="serviceSection animate__animated"
+          className="serviceSection animate__animated invisible"
         >
           <ServicesIntroTitle>Våra tjänster</ServicesIntroTitle>
           <p className="servicesIntro">Vi håller en hög standard.</p>
@@ -306,7 +356,9 @@ const IndexPage = ({ data }) => {
                 <h2>{service.title}</h2>
                 <ul>
                   {service.serviceList.map((listItem, i) => (
-                    <li key={listItem}>{listItem}</li>
+                    <li key={listItem}>
+                      <ServiceListItem>{listItem}</ServiceListItem>
+                    </li>
                   ))}
                 </ul>
                 {/* </a> */}
@@ -315,168 +367,39 @@ const IndexPage = ({ data }) => {
           </ServicesIntroList>
         </ServicesIntroSection>
 
-        {data.services.nodes.map(service => (
+        {data.services.nodes.map((service, i) => (
           <section
-            css={`
-              background-color: #222c2a;
-              color: white;
-            `}
-            className="serviceSection"
+            key={service.title}
+            className={`${i % 2 == 0 ? "dark-section" : null} serviceSection`}
           >
-            <Container
-              additionalStyles={`
-              display: flex;
-              justify-content: space-between;
-            `}
-            >
-              <figure
+            <Container additionalStyles={serviceContainerStyles}>
+              <ServiceFigure
+                className="serviceFigure"
                 css={`
-                  width: 45%;
+                  ${i % 2 == 0 ? "grid-area: left;" : "grid-area: right;"}
                 `}
               >
-                <img src={Image}></img>
-              </figure>
+                <Img fluid={service.image.fluid} alt=""></Img>
+              </ServiceFigure>
               <div
+                className={`${
+                  i % 2 == 0 ? "dark" : "light"
+                } serviceDescription`}
                 css={`
-                  width: 50%;
-
-                  h3 {
-                    margin-top: -4px;
-                    font-size: 2rem;
-                    font-weight: 300;
-                  }
+                  ${i % 2 == 0 ? "grid-area: right;" : "grid-area: left;"}
                 `}
               >
-                <h3 id={service.title}>{service.title}</h3>
-                <p>{service.description.raw}</p>
+                <ServiceTitle className="bbb" id={service.title}>
+                  {service.title}
+                </ServiceTitle>
+                <div>
+                  {service.description &&
+                    renderRichText(service.description, options)}
+                </div>
               </div>
             </Container>
           </section>
         ))}
-
-        {/* <section
-          css={`
-            background-color: #222c2a;
-            color: white;
-          `}
-          className="serviceSection"
-        >
-          <Container
-            additionalStyles={`
-              display: flex;
-              justify-content: space-between;
-            `}
-          >
-            <figure
-              css={`
-                width: 45%;
-              `}
-            >
-              <img src={Image}></img>
-            </figure>
-            <div
-              css={`
-                width: 50%;
-
-                h3 {
-                  margin-top: -4px;
-                  font-size: 2rem;
-                  font-weight: 300;
-                }
-              `}
-            >
-              <h3>Avlopp</h3>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam. Lorem ipsum dolor sit amet, consectetur
-                adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam.
-              </p>
-            </div>
-          </Container>
-        </section>
-
-        <section className="serviceSection">
-          <Container
-            additionalStyles={`
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              grid-gap: 2rem;
-            `}
-          >
-            <div
-              css={`
-                grid-column: 1 / 2;
-                h3 {
-                  margin-top: -4px;
-                  font-size: 2rem;
-                  font-weight: 300;
-                  display: inline-block;
-                }
-              `}
-            >
-              <h3 className="blue-bottom-border">Avlopp</h3>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam. Lorem ipsum dolor sit amet, consectetur
-                adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam.
-              </p>
-            </div>
-            <figure
-              css={`
-                grid-column: 2 / 3;
-              `}
-            >
-              <img src={Image}></img>
-            </figure>
-          </Container>
-        </section>
-
-        <section
-          css={`
-            background-color: #222c2a;
-            color: white;
-          `}
-          className="serviceSection"
-        >
-          <Container
-            additionalStyles={`
-              display: flex;
-              justify-content: space-between;
-            `}
-          >
-            <figure
-              css={`
-                width: 45%;
-              `}
-            >
-              <img src={Image}></img>
-            </figure>
-            <div
-              css={`
-                width: 50%;
-
-                h3 {
-                  margin-top: -4px;
-                  font-size: 2rem;
-                  font-weight: 300;
-                }
-              `}
-            >
-              <h3>Avlopp</h3>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam. Lorem ipsum dolor sit amet, consectetur
-                adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam.
-              </p>
-            </div>
-          </Container>
-        </section> */}
       </Services>
     </Layout>
   )
@@ -511,8 +434,8 @@ export const query = graphql`
       }
     }
     video: contentfulAsset(title: { eq: "backgroundvideo" }) {
-      fluid(quality: 100) {
-        src
+      file {
+        url
       }
     }
     services: allContentfulTjanst {
@@ -522,7 +445,15 @@ export const query = graphql`
         description {
           raw
         }
+        image {
+          fluid(quality: 100) {
+            ...GatsbyContentfulFluid_withWebp
+          }
+        }
       }
+    }
+    serviceList: contentfulTjanstlista {
+      service
     }
   }
 `

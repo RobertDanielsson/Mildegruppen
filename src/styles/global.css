@@ -24,9 +24,10 @@ h2,
 h3,
 h4 {
   margin-top: 0;
+  color: #404040;
 }
 
-.blue-bottom-border {
+.bbb {
   border-bottom: 2px solid #6ec1e4;
 }
 
@@ -39,4 +40,14 @@ h4 {
   position: fixed !important;
   top: -90vh !important;
   z-index: 1 !important;
+}
+
+.dark-section {
+  background-color: #222c2a;
+  color: white !important;
+}
+
+.dark p,
+.dark h3 {
+  color: white !important;
 }
