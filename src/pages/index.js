@@ -314,7 +314,7 @@ const IndexPage = ({ data }) => {
       <GridContainer>
         <Video
           ref={videoRef}
-          playsinline
+          playsInline
           autoPlay
           muted
           loop
