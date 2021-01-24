@@ -320,10 +320,11 @@ const IndexPage = ({ data }) => {
           loop
           disablePictureInPicture
           id="bgvid"
-          src={data.video.file.url}
-          type="video/mp4"
           poster={data.poster.fluid.src}
-        ></Video>
+        >
+          <source src={data.videowebm.file.url} type="video/webm"></source>
+          <source src={data.videomp4.file.url} type="video/mp4"></source>
+        </Video>
         <BlurVideo ref={blurRef}></BlurVideo>
         <Header className="animate__animated animate__fadeIn">
           <StyledIntroImg
@@ -434,7 +435,12 @@ export const query = graphql`
         src
       }
     }
-    video: contentfulAsset(title: { eq: "backgroundvideo" }) {
+    videowebm: contentfulAsset(title: { eq: "backgroundvideo" }) {
+      file {
+        url
+      }
+    }
+    videomp4: contentfulAsset(title: { eq: "backgroundvideomp4" }) {
       file {
         url
       }
