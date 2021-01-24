@@ -11,6 +11,16 @@ import size from "../components/utils/breakpoints"
 import Img from "gatsby-image"
 import { renderRichText } from "gatsby-source-contentful/rich-text"
 import { BLOCKS, INLINES } from "@contentful/rich-text-types"
+import {
+  Link as ScrollLink,
+  DirectLink,
+  Element,
+  Events,
+  animateScroll as scroll,
+  scrollSpy,
+  scroller,
+} from "react-scroll"
+import IntroTitle from "../components/IntroTitle"
 
 const options = {
   renderNode: {
@@ -63,6 +73,7 @@ const Header = styled.header`
   justify-content: center;
   color: white;
   flex-direction: column;
+  margin-top: -3rem;
 `
 
 const StyledIntroImg = styled(Img)`
@@ -118,12 +129,12 @@ const ServicesIntroSection = styled.section`
 `
 
 const Services = styled.div`
-  .serviceSection {
+  .section-padding {
     padding: 100px 0;
   }
 
   @media (max-width: 900px) {
-    .serviceSection {
+    .section-padding {
       padding: 50px 0;
     }
   }
@@ -159,11 +170,6 @@ const ServiceIntro = styled.div`
   align-items: center;
   padding: 25px 50px;
   color: #808080;
-
-  .icon {
-    margin-bottom: 20px;
-    color: #c0c0c0;
-  }
 
   h2 {
     font-weight: 300;
@@ -239,17 +245,27 @@ const IndexPage = ({ data }) => {
   const servicesIntro = useRef(null)
   const blurRef = useRef(null)
   const videoRef = useRef(null)
+  const timeouts = []
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll)
     const element = heroTitle.current
 
     element.addEventListener("animationend", handleHero(element))
+
+    return () => {
+      for (var i = 0; i < timeouts.length; i++) {
+        console.log("clearing", i)
+        clearTimeout(timeouts[i])
+      }
+    }
   }, [])
 
   let itemIndex = 0
 
   const handleHero = element => {
+    if (!element) return
+    console.log("handle hero")
     const numberOfItems = data.serviceList.service.length
 
     if (element.classList.contains("animate__fadeOutDown")) {
@@ -258,32 +274,47 @@ const IndexPage = ({ data }) => {
       element.classList.remove("animate__fadeOutDown")
       element.classList.add("animate__fadeInDown")
 
-      setTimeout(() => {
-        element.classList.remove("animate__fadeInDown")
-        element.classList.add("animate__fadeOutDown")
+      timeouts.push(
         setTimeout(() => {
-          handleHero(element)
-        }, 500)
-      }, 1500)
+          element.classList.remove("animate__fadeInDown")
+          element.classList.add("animate__fadeOutDown")
+          timeouts.push(
+            setTimeout(() => {
+              handleHero(element)
+            }, 500)
+          )
+        }, 1500)
+      )
     } else if (
       !element.classList.contains("animate__fadeOutDown") &&
       !element.classList.contains("animate__fadeInDown")
     ) {
       element.textContent = data.serviceList.service[itemIndex] + "?"
       element.classList.add("animate__fadeInDown")
-      setTimeout(() => {
-        element.classList.remove("animate__fadeInDown")
-        element.classList.add("animate__fadeOutDown")
+      timeouts.push(
         setTimeout(() => {
-          handleHero(element)
-        }, 500)
-      }, 1500)
+          element.classList.remove("animate__fadeInDown")
+          element.classList.add("animate__fadeOutDown")
+          timeouts.push(
+            setTimeout(() => {
+              handleHero(element)
+            }, 500)
+          )
+        }, 1500)
+      )
     }
   }
 
   const handleScroll = () => {
+    if (!videoRef.current || !blurRef.current) return
     //Adds classes to stick video to top as header background
-    if (window.pageYOffset > document.documentElement.clientHeight * 0.9) {
+
+    const clientHeight =
+      document.documentElement.clientWidth >= 900
+        ? document.documentElement.clientHeight * 0.9
+        : document.documentElement.clientHeight * 0.87
+
+    if (window.pageYOffset > clientHeight) {
       if (!videoRef.current.classList.contains("stickyVideo")) {
         videoRef.current.classList.add("stickyVideo")
         blurRef.current.classList.add("stickyVideo")
@@ -346,24 +377,36 @@ const IndexPage = ({ data }) => {
       <Services>
         <ServicesIntroSection
           ref={servicesIntro}
-          className="serviceSection animate__animated invisible"
+          className="section-padding animate__animated invisible"
         >
-          <ServicesIntroTitle>Våra tjänster</ServicesIntroTitle>
-          <p className="servicesIntro">Vi håller en hög standard.</p>
-          <p className="servicesIntro">Detta erbjuder vi er:</p>
+          <IntroTitle
+            title="Våra tjänster"
+            description={
+              <>
+                <p>Vi håller en hög standard.</p>
+                <p>Detta erbjuder vi er:</p>
+              </>
+            }
+          ></IntroTitle>
           <ServicesIntroList>
             {data.services.nodes.map((service, i) => (
               <ServiceIntro key={service.title}>
-                {/* <a href={`#${service.title}`}> */}
-                <h2>{service.title}</h2>
-                <ul>
-                  {service.serviceList.map((listItem, i) => (
-                    <li key={listItem}>
-                      <ServiceListItem>{listItem}</ServiceListItem>
-                    </li>
-                  ))}
-                </ul>
-                {/* </a> */}
+                <ScrollLink
+                  spy={true}
+                  offset={-150}
+                  smooth={true}
+                  duration={500}
+                  to={`${service.title}`}
+                >
+                  <h2>{service.title}</h2>
+                  <ul>
+                    {service.serviceList.map((listItem, i) => (
+                      <li key={listItem}>
+                        <ServiceListItem>{listItem}</ServiceListItem>
+                      </li>
+                    ))}
+                  </ul>
+                </ScrollLink>
               </ServiceIntro>
             ))}
           </ServicesIntroList>
@@ -372,7 +415,7 @@ const IndexPage = ({ data }) => {
         {data.services.nodes.map((service, i) => (
           <section
             key={service.title}
-            className={`${i % 2 == 0 ? "dark-section" : null} serviceSection`}
+            className={`${i % 2 == 0 ? "dark-section" : null} section-padding`}
           >
             <Container additionalStyles={serviceContainerStyles}>
               <ServiceFigure

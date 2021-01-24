@@ -3,16 +3,17 @@ import React, { useState, useEffect } from "react"
 import Img from "gatsby-image"
 import Container from "./container"
 import styled, { css } from "styled-components/macro"
+import { globalHistory } from "@reach/router"
 
 const StyledHeader = styled.header`
-  display: flex;
-  justify-content: space-between;
-  margin: "0 auto";
-  padding: 24px 0px 16px;
+  position: sticky;
+  z-index: 500;
+  left: 0;
+  right: 0;
+  top: 0;
+  margin: 0 auto;
 
-  a {
-    text-decoration: none;
-  }
+  ${props => (props.path !== "/" ? "background-color: rgba(0, 0, 0, 1)" : "")}
 `
 
 const LogoWrapper = styled.div`
@@ -35,22 +36,18 @@ const imgStyles = css`
 
 const Figure = styled.figure`
   margin: 0;
-  margin-right: 1rem;
+  margin-right: 0.5rem;
 `
 
 const containerStyles = css`
-  position: fixed;
-  z-index: 500;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-`
+  display: flex;
+  justify-content: space-between;
+  padding-top: 18px;
+  padding-bottom: 12px;
 
-const LogoTitle = styled.p`
-  font-size: 1rem;
-  letter-spacing: 1px;
-  margin-bottom: 0;
-  color: white;
+  a {
+    text-decoration: none;
+  }
 `
 
 const Nav = styled.nav`
@@ -78,7 +75,7 @@ const Nav = styled.nav`
       }
     }
 
-    p::after {
+    a:not(.active)::after {
       content: "";
       display: block;
       margin: auto;
@@ -88,7 +85,7 @@ const Nav = styled.nav`
       transition: width 0.3s ease, background-color 0.5s ease;
     }
 
-    p:hover::after {
+    a:not(.active):hover::after {
       width: 100%;
       background: #6ec1e4;
     }
@@ -100,6 +97,7 @@ const Nav = styled.nav`
 `
 
 const Header = () => {
+  const path = globalHistory.location.pathname
   const data = useStaticQuery(graphql`
     query HeaderQuery {
       contentfulAsset(title: { eq: "logo" }) {
@@ -108,41 +106,58 @@ const Header = () => {
           ...GatsbyContentfulFluid_withWebp
         }
       }
+      title: contentfulAsset(title: { eq: "milde-title" }) {
+        title
+        fluid(quality: 100) {
+          ...GatsbyContentfulFluid_withWebp
+        }
+      }
     }
   `)
 
   return (
-    <Container additionalStyles={containerStyles}>
-      <StyledHeader>
+    <StyledHeader path={path}>
+      <Container additionalStyles={containerStyles}>
         <Link to="/">
           <LogoWrapper>
             <Figure>
-              <Img css={imgStyles} fluid={data.contentfulAsset.fluid}></Img>
+              <Img
+                placeholderStyle={{ visibility: "hidden" }}
+                css={imgStyles}
+                fluid={data.contentfulAsset.fluid}
+              ></Img>
             </Figure>
-            <LogoTitle>Mildegruppen</LogoTitle>
+            <Img
+              placeholderStyle={{ visibility: "hidden" }}
+              css={`
+                width: 125px;
+                margin-bottom: 3px;
+              `}
+              fluid={data.title.fluid}
+            ></Img>
           </LogoWrapper>
         </Link>
         <Nav>
           <ul>
             <li>
-              <Link to="/">
-                <p>Item 1</p>
+              <Link activeClassName="active" to="/">
+                <p>Start</p>
               </Link>
             </li>
             <li>
-              <Link to="/">
-                <p>Item 2</p>
+              <Link activeClassName="active" to="/contact">
+                <p>Kontakt</p>
               </Link>
             </li>
             <li>
-              <Link to="/">
+              <Link activeClassName="active" to="/asd">
                 <p>Item 3</p>
               </Link>
             </li>
           </ul>
         </Nav>
-      </StyledHeader>
-    </Container>
+      </Container>
+    </StyledHeader>
   )
 }
 

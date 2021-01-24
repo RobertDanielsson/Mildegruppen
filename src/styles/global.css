@@ -1,6 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&display=swap");
 
+/* html {
+  scroll-behavior: smooth;
+} */
+
 body {
   font-family: "Open Sans", sans-serif;
   margin: 0;
@@ -42,6 +46,12 @@ h4 {
   z-index: 1 !important;
 }
 
+@media (max-width: 900px) {
+  .stickyVideo {
+    top: -87.5vh !important;
+  }
+}
+
 .dark-section {
   background-color: #222c2a;
   color: white !important;
@@ -50,4 +60,18 @@ h4 {
 .dark p,
 .dark h3 {
   color: white !important;
+}
+
+.section-padding {
+  padding-top: 100px;
+  padding-bottom: 100px;
+}
+
+.active::after {
+  content: "";
+  display: block;
+  margin: auto;
+  height: 2px;
+  width: 100%;
+  background: #6ec1e4;
 }
