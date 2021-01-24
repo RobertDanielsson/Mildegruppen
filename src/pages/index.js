@@ -318,6 +318,7 @@ const IndexPage = ({ data }) => {
           autoPlay
           muted
           loop
+          disablePictureInPicture
           id="bgvid"
           src={data.video.file.url}
           type="video/mp4"
