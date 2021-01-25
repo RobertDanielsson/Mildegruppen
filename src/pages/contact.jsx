@@ -29,6 +29,10 @@ const Parallax = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 900px){
+    background-attachment: unset;
+  }
 `
 
 const HeroTitle = styled.h1`
