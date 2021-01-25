@@ -97,9 +97,9 @@ const DesktopNav = styled.nav`
       background: #6ec1e4;
     }
 
-    @media (max-width: 900px) {
-      display: none;
-    }
+    // @media (max-width: 900px) {
+    //   display: none;
+    // }
   }
 `
 
@@ -168,19 +168,8 @@ const StyledMenu = styled.nav`
 `
 
 const Menu = ({ open }) => {
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const timeOut = setTimeout(() => {
-      setVisible(true)
-    }, 500)
-    return () => {
-      clearTimeout(timeOut)
-    }
-  }, [])
-
   return (
-    <StyledMenu open={open} className={`${visible ? "" : "display-none"}`}>
+    <StyledMenu open={open}>
       <Link activeClassName="active" to="/">
         <p>Start</p>
       </Link>
@@ -251,6 +240,7 @@ const MobileMenu = styled.div`
 
 const Header = () => {
   const [open, setOpen] = useState(false)
+
   const node = useRef()
   const path = globalHistory.location.pathname
   const data = useStaticQuery(graphql`
@@ -308,10 +298,10 @@ const Header = () => {
             </li>
           </ul>
         </DesktopNav>
-        <MobileMenu ref={node}>
+        {/* <MobileMenu ref={node}>
           <Burger open={open} setOpen={setOpen} />
           <Menu open={open} setOpen={setOpen} />
-        </MobileMenu>
+        </MobileMenu> */}
         {/* <HamburgerWrapper onClick={() => toggleSidebar()}>
           <FontAwesomeIcon icon={faBars} size="lg" />
         </HamburgerWrapper> */}
