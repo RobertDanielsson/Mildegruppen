@@ -11,6 +11,10 @@ const HeroWrapper = styled.div`
     // height: 70vh;
     padding-top: 50px;
     height: 92vh;
+
+    @media (max-width: 900px){
+      padding-top: 0;
+    }
 `
 
 const Parallax = styled.div`
@@ -32,6 +36,8 @@ const Parallax = styled.div`
 
   @media (max-width: 900px){
     background-attachment: unset;
+    height: 100vh;
+    max-height: 100%;
   }
 `
 
