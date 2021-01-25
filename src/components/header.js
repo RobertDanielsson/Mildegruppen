@@ -19,6 +19,8 @@ const StyledHeader = styled.header`
     props.path !== "/"
       ? "background-color: rgba(0, 0, 0, 1); box-shadow: 0 4px 2px 0 black;"
       : ""}
+
+  ${props => (!props.path ? "background-color: rgba(0, 0, 0, 1);" : "")}
 `
 
 const LogoWrapper = styled.div`
