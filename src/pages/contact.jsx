@@ -214,7 +214,7 @@ export default function Contact({data}) {
                     </label>
                   </div>
                   <div>
-                    <button>Skicka</button>
+                    <button className="button">Skicka</button>
                   </div>
                 </Form>
               </Container>

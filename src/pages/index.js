@@ -242,7 +242,7 @@ const IndexPage = ({ data }) => {
 
     return () => {
       for (var i = 0; i < timeouts.length; i++) {
-        console.log("clearing", i)
+        //TODO: Find a better way
         clearTimeout(timeouts[i])
       }
     }
