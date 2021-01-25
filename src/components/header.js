@@ -259,6 +259,8 @@ const Header = () => {
     }
   `)
 
+  console.log("path", path)
+
   return (
     <StyledHeader path={path}>
       <Container additionalStyles={containerStyles}>
