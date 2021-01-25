@@ -6,9 +6,10 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-bottom: 50px;
 
   p {
-    color: #808080;
+    color: ${props => (props.color ? props.color : "#808080")};
     margin: 0;
   }
 `
@@ -21,9 +22,9 @@ const ServicesIntroTitle = styled.h2`
   margin-bottom: 20px;
 `
 
-export default function IntroTitle({ title, description }) {
+export default function IntroTitle({ title, description, color }) {
   return (
-    <Wrapper>
+    <Wrapper color={color}>
       <ServicesIntroTitle>{title}</ServicesIntroTitle>
       {description}
     </Wrapper>

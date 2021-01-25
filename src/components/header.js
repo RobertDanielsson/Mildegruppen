@@ -4,6 +4,8 @@ import Img from "gatsby-image"
 import Container from "./container"
 import styled, { css } from "styled-components/macro"
 import { globalHistory } from "@reach/router"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faBars } from "@fortawesome/free-solid-svg-icons"
 
 const StyledHeader = styled.header`
   position: sticky;
@@ -13,7 +15,10 @@ const StyledHeader = styled.header`
   top: 0;
   margin: 0 auto;
 
-  ${props => (props.path !== "/" ? "background-color: rgba(0, 0, 0, 1)" : "")}
+  ${props =>
+    props.path !== "/"
+      ? "background-color: rgba(0, 0, 0, 1); box-shadow: 0 4px 2px 0 black;"
+      : ""}
 `
 
 const LogoWrapper = styled.div`
@@ -42,15 +47,15 @@ const Figure = styled.figure`
 const containerStyles = css`
   display: flex;
   justify-content: space-between;
-  padding-top: 18px;
-  padding-bottom: 12px;
+  padding-top: 24px;
+  // padding-bottom: 12px;
 
   a {
     text-decoration: none;
   }
 `
 
-const Nav = styled.nav`
+const DesktopNav = styled.nav`
   display: flex;
   z-index: 2;
 
@@ -96,7 +101,33 @@ const Nav = styled.nav`
   }
 `
 
+const HamburgerWrapper = styled.div`
+  @media (min-width: 900px) {
+    display: none;
+  }
+
+  display: flex;
+  align-items: flex-end;
+  color: white;
+`
+
+const MobileNav = styled.nav`
+  @media (min-width: 900px) {
+    display: none;
+  }
+  position: absolute;
+  width: 100vw;
+  min-height: 100vh;
+  background: #fff;
+
+  transform: translateX(100vw);
+  transition: all 0.5s;
+  z-index: 1000;
+  opacity: 0;
+`
+
 const Header = () => {
+  const [open, setOpen] = useState(false)
   const path = globalHistory.location.pathname
   const data = useStaticQuery(graphql`
     query HeaderQuery {
@@ -137,7 +168,7 @@ const Header = () => {
             ></Img>
           </LogoWrapper>
         </Link>
-        <Nav>
+        <DesktopNav>
           <ul>
             <li>
               <Link activeClassName="active" to="/">
@@ -149,13 +180,11 @@ const Header = () => {
                 <p>Kontakt</p>
               </Link>
             </li>
-            <li>
-              <Link activeClassName="active" to="/asd">
-                <p>Item 3</p>
-              </Link>
-            </li>
           </ul>
-        </Nav>
+        </DesktopNav>
+        {/* <HamburgerWrapper onClick={() => toggleSidebar()}>
+          <FontAwesomeIcon icon={faBars} size="lg" />
+        </HamburgerWrapper> */}
       </Container>
     </StyledHeader>
   )

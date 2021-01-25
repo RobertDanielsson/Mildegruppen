@@ -4,6 +4,7 @@ import styled  from 'styled-components/macro';
 import Img from 'gatsby-image'
 import Container from '../components/container';
 import IntroTitle from './../components/IntroTitle';
+import { graphql } from 'gatsby';
 
 const HeroWrapper = styled.div`
     background-color: black;
@@ -52,34 +53,93 @@ const ContactList = styled.div`
 
     @media (max-width: 900px) {
         grid-template-columns: repeat(1, 1fr);
+        justify-items: center;
     }
 `
 
 const PersonWrapper = styled.div`
-    box-shadow: 0 0 2px black;
-    border-radius: 2px;
+    box-shadow: 0 0 5px black;
+    // border-bottom-left-radius: 10px;
+    // border-bottom-right-radius: 10px;
     max-width: 350px;
+    width: 100%;
 `
 
 const PersonImageWrapper = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 150px;
+    height: 200px;
 `
 
 const PersonImage = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-transform: uppercase;
-    background: white;
-    font-family: "Playfair Display", serif;
-    font-size: 2rem;
+    background-image: url(https://source.unsplash.com/1600x900/?face);
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+`
 
-    p {
-        margin: 0;
+const PersonInfo = styled.div`
+  padding: 1rem;
+  // text-align: center;
+
+  p {
+    font-weight: bold;
+  }
+
+  span {
+    font-weight: normal;
+  }
+
+  h3 {
+    text-align: center;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+  }
+`
+
+const FormWrapper = styled.div`
+  color: #824936;
+  background-color: #F3EED9;
+
+  h2 {
+     color: #824936;
+  }
+`
+
+const Form = styled.form`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 700px;
+  margin: 0 auto;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+
+  input, textarea {
+    margin-top: 0.5em;
+  }
+
+  .name, .email, .subject {
+    width: 45%;
+  }
+
+  .body {
+    width: 100%;
+  }
+
+  @media (max-width: 900px){
+    .name, .email, .subject, .body {
+      width: 100%;
     }
+  }
+
 `
 
 export default function Contact({data}) {
@@ -100,24 +160,65 @@ export default function Contact({data}) {
               </>
             }
           ></IntroTitle>
-                    <ContactList>
+                    <ContactList className="section-padding">
                         {data.persons.nodes.map((person, i) => (
                             <PersonWrapper>
                                 <PersonImageWrapper>
                                     <PersonImage>
-                                        <p>{person.name.split(' ')[0].slice(0, 1)}</p>
-                                        <p>{person.name.split(' ')[1].slice(0, 1)}</p>
+                                        {/* <p>{person.name.split(' ')[0].slice(0, 1)}</p>
+                                        <p>{person.name.split(' ')[1].slice(0, 1)}</p> */}
+                                        <div></div>
                                     </PersonImage>
                                 </PersonImageWrapper>
-                                <p>{person.name}</p>
-                                <p>Befattning: {person.title}</p>
-                                <p>Tel: {person.phone}</p>
-                                <p>Email: <a href={`mailto:${person.email}`}>{person.email}</a></p>
+                                <PersonInfo>
+                                  <h3 className="bbb">{person.name}</h3>
+                                  <p>Befattning: <span>{person.title}</span></p>
+                                  <p>Tel: <span>{person.phone}</span></p>
+                                  <p >Email: <a href={`mailto:${person.email}`}><span>{person.email}</span></a></p>
+                                </PersonInfo>
                                 </PersonWrapper>
                         ))}
                     </ContactList>
                 </Container>
             </ContactSection>
+
+            <FormWrapper className="section-padding">
+              <Container >
+                <IntroTitle title="Kontakta oss" color="#824936" description={<p>Fyll i formuläret nedan så återkommer vi.</p>}></IntroTitle>
+                <Form>
+                  <div className="name">
+                    <label htmlFor="name">
+                      Ditt namn (obligatoriskt)
+                      <input  id="name" type="text"></input>
+                    </label>
+                  </div>
+
+                  <div className="email">
+                    <label htmlFor="email">
+                      Din e-post (obligatoriskt)
+                      <input  id="email" type="text"></input>
+                    </label>
+                  </div>
+
+                  <div className="subject">
+                    <label htmlFor="subject">
+                      Ämne
+                      <input  id="subject" type="text"></input>
+                    </label>
+                  </div>
+
+                  <div className="body">
+                    <label htmlFor="body">
+                      Meddelande
+                      <textarea  id="body" type="text"></textarea>
+                    </label>
+                  </div>
+                  <div>
+                    <button>Skicka</button>
+                  </div>
+                </Form>
+              </Container>
+            </FormWrapper>
         </Layout>
     )
 }

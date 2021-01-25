@@ -152,7 +152,6 @@ const ServicesIntroList = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-  margin: 50px 0;
 
   @media (max-width: 900px) {
     flex-direction: column;
@@ -173,19 +172,7 @@ const ServiceIntro = styled.div`
 
   h2 {
     font-weight: 300;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     text-transform: uppercase;
-    letter
-  }
-
-  h2::after {
-    content: "";
-    display: block;
-    height: 2px;
-    width: 110%;
-    background: #6ec1e4;
   }
 
   ul {
@@ -398,15 +385,15 @@ const IndexPage = ({ data }) => {
                   duration={500}
                   to={`${service.title}`}
                 >
-                  <h2>{service.title}</h2>
-                  <ul>
-                    {service.serviceList.map((listItem, i) => (
-                      <li key={listItem}>
-                        <ServiceListItem>{listItem}</ServiceListItem>
-                      </li>
-                    ))}
-                  </ul>
+                  <h2 className="bbb">{service.title}</h2>
                 </ScrollLink>
+                <ul>
+                  {service.serviceList.map((listItem, i) => (
+                    <li key={listItem}>
+                      <ServiceListItem>{listItem}</ServiceListItem>
+                    </li>
+                  ))}
+                </ul>
               </ServiceIntro>
             ))}
           </ServicesIntroList>
