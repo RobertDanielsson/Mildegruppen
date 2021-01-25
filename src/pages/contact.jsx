@@ -92,10 +92,15 @@ const PersonImage = styled.div`
 
 const PersonInfo = styled.div`
   padding: 1rem;
-  // text-align: center;
+  display: flex;
+  flex-direction: column;
 
   p {
     font-weight: bold;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
   }
 
   span {
@@ -107,6 +112,26 @@ const PersonInfo = styled.div`
     font-size: 1.5rem;
     text-transform: uppercase;
   }
+
+  .email {
+    background: #6ec1e4;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    box-shadow: 0 0 5px black;
+    font-family: inherit;
+    border-radius: 3px;
+    color: #404040;
+    display: inline-block;
+  }
+
+  .email:hover {
+    opacity: 0.7;
+    pointer: 
+  }
+
+  
 `
 
 const FormWrapper = styled.div`
@@ -184,7 +209,8 @@ export default function Contact({data}) {
                                   <h3 className="bbb">{person.name}</h3>
                                   <p>Befattning: <span>{person.title}</span></p>
                                   <p>Tel: <span>{person.phone}</span></p>
-                                  <p >Email: <a href={`mailto:${person.email}`}><span>{person.email}</span></a></p>
+                                  <p>Email:{' '}<a href={`mailto:${person.email}`}><span>{person.email}</span></a></p>
+                                  {/* <p> <a className="email" href={`mailto:${person.email}`}>Kontakta</a></p> */}
                                 </PersonInfo>
                                 </PersonWrapper>
                         ))}

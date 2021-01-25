@@ -39,6 +39,7 @@ textarea {
   box-shadow: 0 0 5px black;
   font-family: inherit;
   border-radius: 3px;
+  background-color: #fff;
 }
 
 button:hover {
