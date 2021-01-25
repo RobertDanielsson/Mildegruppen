@@ -168,8 +168,19 @@ const StyledMenu = styled.nav`
 `
 
 const Menu = ({ open }) => {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const timeOut = setTimeout(() => {
+      setVisible(true)
+    }, 500)
+    return () => {
+      clearTimeout(timeOut)
+    }
+  }, [])
+
   return (
-    <StyledMenu open={open}>
+    <StyledMenu open={open} className={`${visible ? "" : "display-none"}`}>
       <Link activeClassName="active" to="/">
         <p>Start</p>
       </Link>

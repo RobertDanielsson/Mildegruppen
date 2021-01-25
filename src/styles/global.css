@@ -103,3 +103,7 @@ h4 {
   width: 100%;
   background: #6ec1e4;
 }
+
+.display-none {
+  display: none;
+}
