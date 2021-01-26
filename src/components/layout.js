@@ -10,7 +10,43 @@ import styled from "styled-components/macro"
 import Img from "gatsby-image"
 
 const Footer = styled.footer`
-  width: 100%;
+  background: #000;
+  padding: 3rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-row-gap: 1rem;
+  // grid-template-areas: "left middle right";
+
+  // justify-content: center;
+  // align-items: flex-end;
+  color: white;
+
+  .copyright {
+    // grid-area: right;
+    align-self: end;
+  }
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    // grid-template-areas: "middle";
+
+    // .copyright {
+    //   grid-area: middle;
+    // }
+  }
+`
+
+const StyledImg = styled(Img)`
+  // grid-area: middle;
+  width: 20rem;
+  justify-self: center;
+  grid-column-start: 2;
+
+  @media (max-width: 900px) {
+    width: 15rem;
+    grid-column-start: 1;
+  }
 `
 
 const Layout = ({ children }) => {
@@ -19,6 +55,12 @@ const Layout = ({ children }) => {
       site {
         siteMetadata {
           title
+        }
+      }
+      title: contentfulAsset(title: { eq: "milde-title" }) {
+        title
+        fluid(quality: 100) {
+          ...GatsbyContentfulFluid_withWebp
         }
       }
     }
@@ -38,7 +80,10 @@ const Layout = ({ children }) => {
       <div>
         <main>{children}</main>
         <Footer>
-          <div></div>
+          <StyledImg fluid={data.title.fluid} alt="" />
+          <p className="white-color no-margin copyright">
+            ©{new Date().getFullYear()}
+          </p>
           {/* <Img fluid={data.footer.fluid}></Img> */}
         </Footer>
       </div>

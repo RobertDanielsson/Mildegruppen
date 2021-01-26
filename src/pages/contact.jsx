@@ -140,8 +140,6 @@ const PersonInfo = styled.div`
     opacity: 0.7;
     pointer: 
   }
-
-  
 `
 
 const FormWrapper = styled.div`

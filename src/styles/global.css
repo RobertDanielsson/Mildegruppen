@@ -60,6 +60,10 @@ h4 {
   color: #404040;
 }
 
+.white-color {
+  color: #fff;
+}
+
 .bbb {
   border-bottom: 2px solid #6ec1e4;
 }
@@ -107,4 +111,8 @@ h4 {
 
 .display-none {
   display: none;
+}
+
+.no-margin {
+  margin: 0;
 }
