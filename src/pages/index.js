@@ -4,7 +4,7 @@ import Layout from "../components/layout"
 import Image from "../images/milde/pipes.jpg"
 import SEO from "../components/seo"
 import backgroundVideo from "../images/background720.mp4"
-import styled, { css } from "styled-components/macro"
+import styled, { css, keyframes } from "styled-components/macro"
 import Container from "../components/container"
 import "animate.css"
 import size from "../components/utils/breakpoints"
@@ -226,6 +226,34 @@ const serviceContainerStyles = css`
   }
 `
 
+const rotate = keyframes`
+  0% {
+    top: -25px;
+    opacity: 0;
+  }
+
+  20% {
+    top: 0px;
+    opacity: 1;
+  }
+
+  80% {
+    top: 0px;
+    opacity: 1;
+  }
+
+  100% {
+    top: 25px;
+    opacity: 0;
+  }
+`
+
+const AnimatedSpanTest = styled.span`
+  animation: ${rotate} 2.5s infinite;
+  display: inline-block;
+  position: relative;
+`
+
 const IndexPage = ({ data }) => {
   console.log("data", data)
   const heroTitle = useRef(null)
@@ -237,60 +265,20 @@ const IndexPage = ({ data }) => {
   useEffect(() => {
     window.addEventListener("scroll", handleScroll)
     const element = heroTitle.current
+    let i = 0
 
-    element.addEventListener("animationend", handleHero(element))
+    const interval = setInterval(() => {
+      console.log(i)
+      console.log(data.serviceList.service[i])
+      i = data.serviceList.service[i] != undefined ? i : 0
+      element.textContent = data.serviceList.service[i] + "?"
+      i++
+    }, 2500)
 
     return () => {
-      for (var i = 0; i < timeouts.length; i++) {
-        //TODO: Find a better way
-        clearTimeout(timeouts[i])
-      }
+      clearInterval(interval)
     }
   }, [])
-
-  let itemIndex = 0
-
-  const handleHero = element => {
-    if (!element) return
-    console.log("handle hero")
-    const numberOfItems = data.serviceList.service.length
-
-    if (element.classList.contains("animate__fadeOutDown")) {
-      itemIndex = itemIndex == numberOfItems - 1 ? 0 : ++itemIndex
-      element.textContent = data.serviceList.service[itemIndex] + "?"
-      element.classList.remove("animate__fadeOutDown")
-      element.classList.add("animate__fadeInDown")
-
-      timeouts.push(
-        setTimeout(() => {
-          element.classList.remove("animate__fadeInDown")
-          element.classList.add("animate__fadeOutDown")
-          timeouts.push(
-            setTimeout(() => {
-              handleHero(element)
-            }, 500)
-          )
-        }, 1500)
-      )
-    } else if (
-      !element.classList.contains("animate__fadeOutDown") &&
-      !element.classList.contains("animate__fadeInDown")
-    ) {
-      element.textContent = data.serviceList.service[itemIndex] + "?"
-      element.classList.add("animate__fadeInDown")
-      timeouts.push(
-        setTimeout(() => {
-          element.classList.remove("animate__fadeInDown")
-          element.classList.add("animate__fadeOutDown")
-          timeouts.push(
-            setTimeout(() => {
-              handleHero(element)
-            }, 500)
-          )
-        }, 1500)
-      )
-    }
-  }
 
   const handleScroll = () => {
     if (!videoRef.current || !blurRef.current) return
@@ -350,12 +338,13 @@ const IndexPage = ({ data }) => {
             fluid={data.title.fluid}
           ></StyledIntroImg>
           <HeroTitle>
-            Behöver ni hjälp med{" "}
+            Behöver ni hjälp med
             <AnimatedSpanWrapper>
-              <AnimatedSpan
+              <AnimatedSpanTest ref={heroTitle}></AnimatedSpanTest>
+              {/* <AnimatedSpan
                 ref={heroTitle}
                 className="animate__animated animate__faster bbb"
-              ></AnimatedSpan>
+              ></AnimatedSpan> */}
             </AnimatedSpanWrapper>
           </HeroTitle>
         </Header>

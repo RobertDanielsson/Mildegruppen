@@ -8,13 +8,17 @@ import { graphql } from 'gatsby';
 
 const HeroWrapper = styled.div`
     background-color: black;
-    // height: 70vh;
-    padding-top: 50px;
-    height: 92vh;
+    top: 0;
+    height: 100vh;
+    margin-top: -85px;
 
     @media (max-width: 900px){
       padding-top: 0;
     }
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `
 
 const Parallax = styled.div`
@@ -39,6 +43,12 @@ const Parallax = styled.div`
     height: 100vh;
     max-height: 100%;
   }
+
+  @media (min-height: 1200px){
+    height: 700px;
+  }
+
+  width: 100%;
 `
 
 const HeroTitle = styled.h1`
