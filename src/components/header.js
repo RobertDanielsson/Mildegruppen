@@ -97,142 +97,75 @@ const DesktopNav = styled.nav`
       background: #6ec1e4;
     }
 
-    // @media (max-width: 900px) {
-    //   display: none;
-    // }
+    @media (max-width: 900px) {
+      display: none;
+    }
   }
 `
 
-const HamburgerWrapper = styled.div`
-  @media (min-width: 900px) {
-    display: none;
+const NavList = styled.ul`
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: column;
+
+  .nav-link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 3rem;
+    font-weight: 700;
   }
 
-  display: flex;
-  align-items: flex-end;
-  color: white;
+  // .nav-item + .nav-item {
+  //   margin-top: 1em;
+  // }
+
+  .nav-link:hover,
+  .nav-link:focus {
+    color: #6ec1e4;
+  }
 `
 
 const MobileNav = styled.nav`
+  position: fixed;
+  background: #000;
+  width: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 100%;
+  transform: translateX(0);
+  transition: transform 250ms;
+
+  .close-nav {
+    border: 0;
+    background: 0;
+    color: #6ec1e4;
+    font-weight: 700;
+    font-size: 3rem;
+    cursor: pointer;
+    padding: 0.5em;
+    position: absolute;
+  }
+
   @media (min-width: 900px) {
     display: none;
   }
-  position: absolute;
-  width: 100vw;
-  min-height: 100vh;
-  background: #fff;
-
-  transform: translateX(100vw);
-  transition: all 0.5s;
-  z-index: 1000;
-  opacity: 0;
 `
 
-const StyledMenu = styled.nav`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background: #effffa;
-  transform: ${({ open }) => (open ? "translateX(0)" : "translateX(-100%)")};
-  height: 100vh;
-  text-align: left;
-  padding: 2rem;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transition: transform 0.3s ease-in-out;
-
-  @media (max-width: 576px) {
-    width: 100%;
-  }
-
-  a {
-    font-size: 2rem;
-    text-transform: uppercase;
-    padding: 2rem 0;
-    font-weight: bold;
-    letter-spacing: 0.5rem;
-    color: #0d0c1d;
-    text-decoration: none;
-    transition: color 0.3s linear;
-
-    @media (max-width: 576px) {
-      font-size: 1.5rem;
-      text-align: center;
-    }
-
-    &:hover {
-      color: #343078;
-    }
-  }
-`
-
-const Menu = ({ open }) => {
-  return (
-    <StyledMenu open={open}>
-      <Link activeClassName="active" to="/">
-        <p>Start</p>
-      </Link>
-      <Link activeClassName="active" to="/contact">
-        <p>Kontakt</p>
-      </Link>
-    </StyledMenu>
-  )
-}
-
-const StyledBurger = styled.button`
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  width: 2rem;
-  height: 2rem;
-  right: 1rem;
-  background: transparent;
-  border: none;
+const OpenMobileNavBtn = styled.button`
+  border: 0;
+  background: 0;
+  color: #fff;
   cursor: pointer;
-  padding: 0;
-  z-index: 10;
+  margin-left: auto;
+  font-size: 1.5em;
+  align-self: flex-end;
 
-  &:focus {
-    outline: none;
-  }
-
-  div {
-    width: 2rem;
-    height: 0.25rem;
-    background: ${({ open }) => (open ? "#0D0C1D" : "#EFFFFA")};
-    border-radius: 10px;
-    transition: all 0.3s linear;
-    position: relative;
-    transform-origin: 1px;
-
-    :first-child {
-      transform: ${({ open }) => (open ? "rotate(45deg)" : "rotate(0)")};
-    }
-
-    :nth-child(2) {
-      opacity: ${({ open }) => (open ? "0" : "1")};
-      transform: ${({ open }) => (open ? "translateX(20px)" : "translateX(0)")};
-    }
-
-    :nth-child(3) {
-      transform: ${({ open }) => (open ? "rotate(-45deg)" : "rotate(0)")};
-    }
-  }
-`
-
-const Burger = ({ open, setOpen }) => {
-  return (
-    <StyledBurger open={open} onClick={() => setOpen(!open)}>
-      <div />
-      <div />
-      <div />
-    </StyledBurger>
-  )
-}
-
-const MobileMenu = styled.div`
   @media (min-width: 900px) {
     display: none;
   }
@@ -240,8 +173,6 @@ const MobileMenu = styled.div`
 
 const Header = () => {
   const [open, setOpen] = useState(false)
-
-  const node = useRef()
   const path = globalHistory.location.pathname
   const data = useStaticQuery(graphql`
     query HeaderQuery {
@@ -261,6 +192,10 @@ const Header = () => {
   `)
 
   console.log("path", path)
+
+  const handleMenu = () => {
+    setOpen(!open)
+  }
 
   return (
     <StyledHeader path={path}>
@@ -298,13 +233,34 @@ const Header = () => {
             </li>
           </ul>
         </DesktopNav>
-        {/* <MobileMenu ref={node}>
-          <Burger open={open} setOpen={setOpen} />
-          <Menu open={open} setOpen={setOpen} />
-        </MobileMenu> */}
-        {/* <HamburgerWrapper onClick={() => toggleSidebar()}>
-          <FontAwesomeIcon icon={faBars} size="lg" />
-        </HamburgerWrapper> */}
+        <OpenMobileNavBtn
+          aria-label="Open navigation"
+          className="open-nav"
+          onClick={handleMenu}
+        >
+          &#9776;
+        </OpenMobileNavBtn>
+        <MobileNav className={`nav ${open ? "navigation-open" : ""}`}>
+          <button
+            aria-label="Close navigation"
+            className="close-nav"
+            onClick={handleMenu}
+          >
+            &times;
+          </button>
+          <NavList className="nav-list">
+            <li className="nav-item">
+              <Link activeClassName="active" to="/" className="nav-link">
+                Start
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link activeClassName="active" to="/contact" className="nav-link">
+                Kontakt
+              </Link>
+            </li>
+          </NavList>
+        </MobileNav>
       </Container>
     </StyledHeader>
   )

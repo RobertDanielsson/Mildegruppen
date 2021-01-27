@@ -116,3 +116,7 @@ h4 {
 .no-margin {
   margin: 0;
 }
+
+.navigation-open {
+  transform: translateX(-100%) !important;
+}
