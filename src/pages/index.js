@@ -107,11 +107,6 @@ const HeroTitle = styled.p`
   }
 `
 
-const AnimatedSpan = styled.span`
-  display: inline-block;
-  text-transform: lowercase;
-`
-
 const AnimatedSpanWrapper = styled.span`
   width: 301px;
   margin-left: 0.75rem;
@@ -248,10 +243,11 @@ const rotate = keyframes`
   }
 `
 
-const AnimatedSpanTest = styled.span`
+const AnimatedSpan = styled.span`
   animation: ${rotate} 2.5s infinite;
   display: inline-block;
   position: relative;
+  text-transform: lowercase;
 `
 
 const IndexPage = ({ data }) => {
@@ -260,7 +256,6 @@ const IndexPage = ({ data }) => {
   const servicesIntro = useRef(null)
   const blurRef = useRef(null)
   const videoRef = useRef(null)
-  const timeouts = []
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll)
@@ -268,8 +263,6 @@ const IndexPage = ({ data }) => {
     let i = 0
 
     const interval = setInterval(() => {
-      console.log(i)
-      console.log(data.serviceList.service[i])
       i = data.serviceList.service[i] != undefined ? i : 0
       element.textContent = data.serviceList.service[i] + "?"
       i++
@@ -340,7 +333,7 @@ const IndexPage = ({ data }) => {
           <HeroTitle>
             Behöver ni hjälp med
             <AnimatedSpanWrapper>
-              <AnimatedSpanTest ref={heroTitle}></AnimatedSpanTest>
+              <AnimatedSpan className="bbb" ref={heroTitle}></AnimatedSpan>
               {/* <AnimatedSpan
                 ref={heroTitle}
                 className="animate__animated animate__faster bbb"
