@@ -14,20 +14,14 @@ const StyledHeader = styled.header`
   right: 0;
   top: 0;
   margin: 0 auto;
-
-  ${props =>
-    props.path !== "/"
-      ? "background-color: rgba(0, 0, 0, 1); box-shadow: 0 4px 2px 0 black;"
-      : ""}
-
-  ${props => (!props.path ? "background-color: rgba(0, 0, 0, 1);" : "")}
+  background-color: black;
+  box-shadow: 0 2px 2px 0px black;
 `
 
 const LogoWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  color: white;
 
   &:hover {
     opacity: 0.7;
@@ -214,6 +208,8 @@ const Header = () => {
               css={`
                 width: 125px;
                 margin-bottom: 3px;
+                filter: drop-shadow(0.25px 0.25px 0 black)
+                  drop-shadow(-0.5px -0.5px 0 black);
               `}
               fluid={data.title.fluid}
             ></Img>

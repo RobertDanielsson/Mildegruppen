@@ -10,30 +10,114 @@ import "animate.css"
 import size from "../components/utils/breakpoints"
 import Img from "gatsby-image"
 import { renderRichText } from "gatsby-source-contentful/rich-text"
-import { BLOCKS, INLINES } from "@contentful/rich-text-types"
-import {
-  Link as ScrollLink,
-  DirectLink,
-  Element,
-  Events,
-  animateScroll as scroll,
-  scrollSpy,
-  scroller,
-} from "react-scroll"
+import { BLOCKS, INLINES, MARKS } from "@contentful/rich-text-types"
+import { Link as ScrollLink, animateScroll as scroll } from "react-scroll"
 import IntroTitle from "../components/IntroTitle"
+import ContentArea from "../components/ContentArea"
 
 const options = {
+  renderMark: {
+    [MARKS.BOLD]: text => <strong>{text}</strong>,
+    [MARKS.PARAGRAPH]: text => <p>{text}</p>,
+    [MARKS.HYPERLINK]: text => <p>första</p>,
+  },
   renderNode: {
-    [INLINES.ENTRY_HYPERLINK]: ({
-      data: {
-        target: { slug, title },
-      },
-    }) => <Link to={slug}>{title}</Link>,
-    [BLOCKS.EMBEDDED_ASSET]: node => <Img {...node.data.target} />,
+    [BLOCKS.PARAGRAPH]: (node, children) => {
+      return <p>{children}</p>
+    },
+    [BLOCKS.EMBEDDED_ASSET]: (node, children) => {
+      const {
+        fixed: { src },
+        title,
+      } = node.data.target
+
+      return <img src={src} alt={title} />
+    },
+    [INLINES.HYPERLINK]: node => {
+      if (node.data.uri.includes("iframe")) {
+        return <div dangerouslySetInnerHTML={{ __html: node.data.uri }} />
+      }
+      if (node.data.uri.indexOf("youtube.com") !== -1) {
+        return (
+          <div>
+            <iframe
+              width="560"
+              height="315"
+              src={node.data.uri.replace("watch?v=", "embed/")}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </div>
+        )
+      } else
+        return (
+          <a
+            href={node.data.uri}
+            target={`${
+              node.data.uri.startsWith("website_url") ? "_self" : "_blank"
+            }`}
+            rel={`${
+              node.data.uri.startsWith("website_url")
+                ? ""
+                : "noopener noreferrer"
+            }`}
+          >
+            {node.content[0].value}
+          </a>
+        )
+    },
+    [INLINES.EMBEDDED_ENTRY]: (node, children) => {
+      if (node.data.target.__typename === "ContentfulLank") {
+        if (node.data.target.button) {
+          return (
+            <Link className="button btn-accent" to={node.data.target.url}>
+              {node.data.target.title}
+            </Link>
+          )
+        }
+        return <Link to={node.data.target.url}>{node.data.target.title}</Link>
+      }
+    },
   },
 }
 
-const Video = styled.video`
+const heroDescriptionOptions = {
+  renderNode: {
+    [BLOCKS.PARAGRAPH]: (node, children) => {
+      return <p className="white-text">{children}</p>
+    },
+    [INLINES.HYPERLINK]: node => {
+      return <Link to={node.data.uri}>{node.data.uri}</Link>
+    },
+    [INLINES.EMBEDDED_ENTRY]: (node, children) => {
+      if (node.data.target.__typename === "ContentfulLank") {
+        if (node.data.target.button) {
+          return (
+            <Link className="button btn-accent" to={node.data.target.url}>
+              {node.data.target.title}
+            </Link>
+          )
+        }
+        return <Link to={node.data.target.url}>{node.data.target.title}</Link>
+      }
+    },
+    [BLOCKS.EMBEDDED_ENTRY]: (node, children) => {
+      if (node.data.target.__typename === "ContentfulLank") {
+        if (node.data.target.button) {
+          return (
+            <Link className="button btn-accent" to={node.data.target.url}>
+              {node.data.target.title}
+            </Link>
+          )
+        }
+        return <Link to={node.data.target.url}>{node.data.target.title}</Link>
+      }
+    },
+  },
+}
+
+const Hero = styled.div`
   z-index: -1;
   background-color: #404040;
   position: absolute;
@@ -74,6 +158,7 @@ const Header = styled.header`
   color: white;
   flex-direction: column;
   margin-top: -3rem;
+  text-align: center;
 `
 
 const StyledIntroImg = styled(Img)`
@@ -96,7 +181,6 @@ const HeroTitle = styled.p`
   display: flex;
   font-size: 2rem;
   font-weight: 700;
-  margin-left: 10rem;
   color: white;
 
   @media (max-width: 900px) {
@@ -221,87 +305,12 @@ const serviceContainerStyles = css`
   }
 `
 
-const rotate = keyframes`
-  0% {
-    top: -25px;
-    opacity: 0;
-  }
-
-  20% {
-    top: 0px;
-    opacity: 1;
-  }
-
-  80% {
-    top: 0px;
-    opacity: 1;
-  }
-
-  100% {
-    top: 25px;
-    opacity: 0;
-  }
-`
-
-const AnimatedSpan = styled.span`
-  animation: ${rotate} 2.5s infinite;
-  display: inline-block;
-  position: relative;
-  text-transform: lowercase;
-`
-
 const IndexPage = ({ data }) => {
   console.log("data", data)
   const heroTitle = useRef(null)
   const servicesIntro = useRef(null)
   const blurRef = useRef(null)
   const videoRef = useRef(null)
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll)
-    const element = heroTitle.current
-    let i = 0
-
-    const interval = setInterval(() => {
-      i = data.serviceList.service[i] != undefined ? i : 0
-      element.textContent = data.serviceList.service[i] + "?"
-      i++
-    }, 2500)
-
-    return () => {
-      clearInterval(interval)
-    }
-  }, [])
-
-  const handleScroll = () => {
-    if (!videoRef.current || !blurRef.current) return
-    //Adds classes to stick video to top as header background
-
-    const clientHeight =
-      document.documentElement.clientWidth >= 900
-        ? document.documentElement.clientHeight * 0.9
-        : document.documentElement.clientHeight * 0.87
-
-    if (window.pageYOffset > clientHeight) {
-      if (!videoRef.current.classList.contains("stickyVideo")) {
-        videoRef.current.classList.add("stickyVideo")
-        blurRef.current.classList.add("stickyVideo")
-      }
-    } else {
-      if (videoRef.current.classList.contains("stickyVideo")) {
-        videoRef.current.classList.remove("stickyVideo")
-        blurRef.current.classList.remove("stickyVideo")
-      }
-    }
-
-    if (
-      isInViewport(servicesIntro.current) &&
-      !servicesIntro.current.classList.contains("animate__fadeIn")
-    ) {
-      servicesIntro.current.classList.remove("invisible")
-      servicesIntro.current.classList.add("animate__fadeIn")
-    }
-  }
 
   const isInViewport = element => {
     const rect = element.getBoundingClientRect()
@@ -311,42 +320,45 @@ const IndexPage = ({ data }) => {
   return (
     <Layout>
       <GridContainer>
-        <Video
-          ref={videoRef}
-          playsInline
-          autoPlay
-          muted
-          loop
-          disablePictureInPicture
-          id="bgvid"
-          poster={data.poster.fluid.src}
-        >
-          <source src={data.videowebm.file.url} type="video/webm"></source>
-          <source src={data.videomp4.file.url} type="video/mp4"></source>
-        </Video>
+        <Hero>
+          <Img
+            style={{ position: "unset" }}
+            fluid={data.startPage.heroImg.fluid}
+          ></Img>
+        </Hero>
         <BlurVideo ref={blurRef}></BlurVideo>
         <Header className="animate__animated animate__fadeIn">
           <StyledIntroImg
             placeholderStyle={{ visibility: "hidden" }}
             fluid={data.title.fluid}
           ></StyledIntroImg>
-          <HeroTitle>
-            Behöver ni hjälp med
-            <AnimatedSpanWrapper>
-              <AnimatedSpan className="bbb" ref={heroTitle}></AnimatedSpan>
-              {/* <AnimatedSpan
-                ref={heroTitle}
-                className="animate__animated animate__faster bbb"
-              ></AnimatedSpan> */}
-            </AnimatedSpanWrapper>
-          </HeroTitle>
+          <HeroTitle>{data.startPage.heroIntro}</HeroTitle>
+          <div className="description">
+            {data.startPage.heroDescription &&
+              renderRichText(
+                data.startPage.heroDescription,
+                heroDescriptionOptions
+              )}
+          </div>
         </Header>
       </GridContainer>
 
-      <Services>
+      <Container>
+        <div
+          css={`
+            padding: 120px 0;
+            > * + * {
+              margin-top: 100px !important;
+            }
+          `}
+        >
+          <ContentArea contentTypes={data.startBlocks.blocks}></ContentArea>
+        </div>
+      </Container>
+      {/* <Services>
         <ServicesIntroSection
           ref={servicesIntro}
-          className="section-padding animate__animated invisible"
+          className="section-padding animate__animated"
         >
           <IntroTitle
             title="Våra tjänster"
@@ -414,7 +426,7 @@ const IndexPage = ({ data }) => {
             </Container>
           </section>
         ))}
-      </Services>
+      </Services> */}
     </Layout>
   )
 }
@@ -447,14 +459,24 @@ export const query = graphql`
         src
       }
     }
-    videowebm: contentfulAsset(title: { eq: "backgroundvideo" }) {
-      file {
-        url
+    startPage: contentfulStartsida {
+      heroImg {
+        fluid(quality: 100) {
+          ...GatsbyContentfulFluid_withWebp
+        }
       }
-    }
-    videomp4: contentfulAsset(title: { eq: "backgroundvideomp4" }) {
-      file {
-        url
+      heroIntro
+      heroDescription {
+        raw
+        references {
+          ... on ContentfulLank {
+            contentful_id
+            __typename
+            button
+            url
+            title
+          }
+        }
       }
     }
     services: allContentfulTjanst {
@@ -463,6 +485,16 @@ export const query = graphql`
         serviceList
         description {
           raw
+          references {
+            ... on ContentfulAsset {
+              contentful_id
+              __typename
+              title
+              fixed(width: 750) {
+                src
+              }
+            }
+          }
         }
         image {
           fluid(quality: 100) {
@@ -473,6 +505,28 @@ export const query = graphql`
     }
     serviceList: contentfulTjanstlista {
       service
+    }
+    startBlocks: contentfulStandardsida(slug: { eq: "testsida" }) {
+      title
+      blocks {
+        __typename
+        ... on Node {
+          ... on ContentfulDelatBlockText {
+            leftDescription {
+              raw
+            }
+            rightDescription {
+              raw
+            }
+          }
+          ... on ContentfulTextBlock {
+            id
+            description {
+              raw
+            }
+          }
+        }
+      }
     }
   }
 `
