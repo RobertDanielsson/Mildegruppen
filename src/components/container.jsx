@@ -11,7 +11,6 @@ const Root = styled.div`
     margin: 0 auto;
 `
 
-
 export default function Container({children, additionalStyles}) {
     return (
         <Root css={additionalStyles}>

@@ -14,6 +14,7 @@ import { BLOCKS, INLINES, MARKS } from "@contentful/rich-text-types"
 import { Link as ScrollLink, animateScroll as scroll } from "react-scroll"
 import IntroTitle from "../components/IntroTitle"
 import ContentArea from "../components/ContentArea"
+import RichTextRenderer from "../components/Blocks/RichTextRenderer"
 
 const options = {
   renderMark: {
@@ -306,7 +307,6 @@ const serviceContainerStyles = css`
 `
 
 const IndexPage = ({ data }) => {
-  console.log("data", data)
   const heroTitle = useRef(null)
   const servicesIntro = useRef(null)
   const blurRef = useRef(null)
@@ -330,31 +330,27 @@ const IndexPage = ({ data }) => {
         <Header className="animate__animated animate__fadeIn">
           <StyledIntroImg
             placeholderStyle={{ visibility: "hidden" }}
-            fluid={data.title.fluid}
+            fluid={data.startPage.heroTitleImg.fluid}
           ></StyledIntroImg>
           <HeroTitle>{data.startPage.heroIntro}</HeroTitle>
-          <div className="description">
-            {data.startPage.heroDescription &&
-              renderRichText(
-                data.startPage.heroDescription,
-                heroDescriptionOptions
-              )}
-          </div>
+          <Container>
+            <div className="max-width align-center">
+              <RichTextRenderer content={data.startPage.heroDescription} />
+            </div>
+          </Container>
         </Header>
       </GridContainer>
 
-      <Container>
-        <div
-          css={`
-            padding: 120px 0;
-            > * + * {
-              margin-top: 100px !important;
-            }
-          `}
-        >
-          <ContentArea contentTypes={data.startBlocks.blocks}></ContentArea>
-        </div>
-      </Container>
+      <div
+        css={`
+          padding: 120px 0;
+          > * + * {
+            margin-top: 100px !important;
+          }
+        `}
+      >
+        <ContentArea contentTypes={data.startBlocks.blocks}></ContentArea>
+      </div>
       {/* <Services>
         <ServicesIntroSection
           ref={servicesIntro}
@@ -447,20 +443,13 @@ export default IndexPage
 
 export const query = graphql`
   query indexQuery {
-    title: contentfulAsset(title: { eq: "milde-title" }) {
-      title
-      fluid(quality: 100) {
-        ...GatsbyContentfulFluid_withWebp
-      }
-    }
-    poster: contentfulAsset(title: { eq: "poster" }) {
-      title
-      fluid(quality: 100) {
-        src
-      }
-    }
     startPage: contentfulStartsida {
       heroImg {
+        fluid(quality: 100) {
+          ...GatsbyContentfulFluid_withWebp
+        }
+      }
+      heroTitleImg {
         fluid(quality: 100) {
           ...GatsbyContentfulFluid_withWebp
         }
@@ -479,33 +468,7 @@ export const query = graphql`
         }
       }
     }
-    services: allContentfulTjanst {
-      nodes {
-        title
-        serviceList
-        description {
-          raw
-          references {
-            ... on ContentfulAsset {
-              contentful_id
-              __typename
-              title
-              fixed(width: 750) {
-                src
-              }
-            }
-          }
-        }
-        image {
-          fluid(quality: 100) {
-            ...GatsbyContentfulFluid_withWebp
-          }
-        }
-      }
-    }
-    serviceList: contentfulTjanstlista {
-      service
-    }
+
     startBlocks: contentfulStandardsida(slug: { eq: "testsida" }) {
       title
       blocks {
@@ -514,15 +477,64 @@ export const query = graphql`
           ... on ContentfulDelatBlockText {
             leftDescription {
               raw
+              references {
+                ... on ContentfulLank {
+                  contentful_id
+                  __typename
+                  button
+                  url
+                  title
+                }
+              }
             }
             rightDescription {
               raw
+              references {
+                ... on ContentfulLank {
+                  contentful_id
+                  __typename
+                  button
+                  url
+                  title
+                }
+              }
             }
           }
           ... on ContentfulTextBlock {
             id
+            centeredText
             description {
               raw
+              references {
+                ... on ContentfulLank {
+                  contentful_id
+                  __typename
+                  button
+                  url
+                  title
+                }
+              }
+            }
+          }
+          ... on ContentfulHeroBlock {
+            title
+            parallax
+            description {
+              raw
+              references {
+                ... on ContentfulLank {
+                  contentful_id
+                  __typename
+                  button
+                  url
+                  title
+                }
+              }
+            }
+            image {
+              fixed(quality: 100, width: 2000) {
+                src
+              }
             }
           }
         }
@@ -530,3 +542,30 @@ export const query = graphql`
     }
   }
 `
+// services: allContentfulTjanst {
+//   nodes {
+//     title
+//     serviceList
+//     description {
+//       raw
+//       references {
+//         ... on ContentfulAsset {
+//           contentful_id
+//           __typename
+//           title
+//           fixed(width: 750) {
+//             src
+//           }
+//         }
+//       }
+//     }
+//     image {
+//       fluid(quality: 100) {
+//         ...GatsbyContentfulFluid_withWebp
+//       }
+//     }
+//   }
+// }
+// serviceList: contentfulTjanstlista {
+//   service
+// }

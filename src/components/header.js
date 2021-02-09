@@ -1,11 +1,9 @@
 import { Link, useStaticQuery, graphql } from "gatsby"
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState } from "react"
 import Img from "gatsby-image"
 import Container from "./container"
 import styled, { css } from "styled-components/macro"
 import { globalHistory } from "@reach/router"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faBars } from "@fortawesome/free-solid-svg-icons"
 
 const StyledHeader = styled.header`
   position: sticky;
@@ -59,21 +57,9 @@ const DesktopNav = styled.nav`
     display: flex;
     align-items: flex-end;
     list-style-type: none;
-    padding: 0;
-    margin: 0;
-
-    li {
-      margin-left: 8px;
-      margin-right: 8px;
-    }
 
     p {
-      color: white;
       margin: 0;
-
-      :hover {
-        opacity: 0.7;
-      }
     }
 
     a:not(.active)::after {
@@ -89,6 +75,10 @@ const DesktopNav = styled.nav`
     a:not(.active):hover::after {
       width: 100%;
       background: #6ec1e4;
+    }
+
+    .desktop-nav-item + .desktop-nav-item {
+      margin-left: 2rem;
     }
 
     @media (max-width: 900px) {
@@ -113,10 +103,6 @@ const NavList = styled.ul`
     font-size: 3rem;
     font-weight: 700;
   }
-
-  // .nav-item + .nav-item {
-  //   margin-top: 1em;
-  // }
 
   .nav-link:hover,
   .nav-link:focus {
@@ -182,10 +168,24 @@ const Header = () => {
           ...GatsbyContentfulFluid_withWebp
         }
       }
+      nav: contentfulNavigering {
+        links {
+          title
+          linkToPage {
+            slug
+          }
+          childLinks {
+            title
+            linkToPage {
+              slug
+            }
+          }
+        }
+      }
     }
   `)
 
-  console.log("path", path)
+  console.log("header data", data)
 
   const handleMenu = () => {
     setOpen(!open)
@@ -216,16 +216,54 @@ const Header = () => {
           </LogoWrapper>
         </Link>
         <DesktopNav>
-          <ul>
-            <li>
-              <Link activeClassName="active" to="/">
-                <p>Start</p>
+          <ul className="no-margin">
+            <li className="desktop-nav-item">
+              <Link className="desktop-link" activeClassName="active" to="/">
+                Start
               </Link>
             </li>
-            <li>
-              <Link activeClassName="active" to="/contact">
-                <p>Kontakt</p>
+            <li className="desktop-nav-item">
+              <Link
+                className="desktop-link"
+                activeClassName="active"
+                to="/contact"
+              >
+                Kontakt
               </Link>
+            </li>
+            {data.nav.links.map(link => {
+              return (
+                <li className="desktop-nav-item">
+                  <Link
+                    className="desktop-link"
+                    activeClassName="active"
+                    to={`/${link.linkToPage.slug}`}
+                  >
+                    {link.title}
+                  </Link>
+                  {link.childLinks && (
+                    <ul className="desktop-sub-nav">
+                      {link.childLinks.map(childLink => {
+                        return (
+                          <li className="desktop-sub-nav-item">
+                            <Link
+                              className="desktop-sub-link"
+                              activeClassName="active"
+                              to={`/${childLink.linkToPage.slug}`}
+                            >
+                              {childLink.title}
+                            </Link>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  )}
+                </li>
+              )
+            })}
+            <li className="desktop-nav-item call-us">
+              <p>Ring oss 070-284 44 12</p>
+              <p>markus@mildegruppen.se</p>
             </li>
           </ul>
         </DesktopNav>
@@ -255,6 +293,36 @@ const Header = () => {
                 Kontakt
               </Link>
             </li>
+            {data.nav.links.map(link => {
+              return (
+                <li className="nav-item">
+                  <Link
+                    className="nav-link"
+                    activeClassName="active"
+                    to={`/${link.linkToPage.slug}`}
+                  >
+                    {link.title}
+                  </Link>
+                  {link.childLinks && (
+                    <ul>
+                      {link.childLinks.map(childLink => {
+                        return (
+                          <li>
+                            <Link
+                              className="nav-link"
+                              activeClassName="active"
+                              to={`/${childLink.linkToPage.slug}`}
+                            >
+                              {childLink.title}
+                            </Link>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  )}
+                </li>
+              )
+            })}
           </NavList>
         </MobileNav>
       </Container>
@@ -263,19 +331,3 @@ const Header = () => {
 }
 
 export default Header
-
-const useOnClickOutside = (ref, handler) => {
-  React.useEffect(() => {
-    const listener = event => {
-      if (!ref.current || ref.current.contains(event.target)) {
-        return
-      }
-      handler(event)
-    }
-    document.addEventListener("mousedown", listener)
-
-    return () => {
-      document.removeEventListener("mousedown", listener)
-    }
-  }, [ref, handler])
-}

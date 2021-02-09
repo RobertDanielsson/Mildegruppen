@@ -271,7 +271,7 @@ export const query = graphql`
   query contactQuery {
     contact: contentfulKontaktsida {
     heroImage {
-      fixed(quality: 100, width: 3840) {
+      fixed(quality: 100, width: 2000) {
         src
       }
     }

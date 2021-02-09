@@ -24,19 +24,17 @@ const options = {
       }
       if (node.data.uri.indexOf("youtube.com") !== -1) {
         return (
-          <div>
-            <iframe
-              width="560"
-              height="315"
-              src={node.data.uri.replace("watch?v=", "embed/")}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
-          </div>
+          <iframe
+            width="100%"
+            src={node.data.uri.replace("watch?v=", "embed/")}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
         )
       } else
         return (
+          //TODO fixa website_url
           <a
             href={node.data.uri}
             target={`${
@@ -53,6 +51,18 @@ const options = {
         )
     },
     [INLINES.EMBEDDED_ENTRY]: (node, children) => {
+      if (node.data.target.__typename === "ContentfulLank") {
+        if (node.data.target.button) {
+          return (
+            <Link className="button btn-accent" to={node.data.target.url}>
+              {node.data.target.title}
+            </Link>
+          )
+        }
+        return <Link to={node.data.target.url}>{node.data.target.title}</Link>
+      }
+    },
+    [BLOCKS.EMBEDDED_ENTRY]: (node, children) => {
       if (node.data.target.__typename === "ContentfulLank") {
         if (node.data.target.button) {
           return (
