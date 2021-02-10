@@ -2,6 +2,7 @@ import React from "react"
 import SplitTextBlock from "./Blocks/SplitTextBlock"
 import TextAreaBlock from "./Blocks/TextAreaBlock"
 import HeroBlock from "./Blocks/HeroBlock"
+import SplitTextImageBlock from "./Blocks/SplitTextImageBlock"
 
 const ContentArea = ({ contentTypes }) => {
   console.log("contentTypes", contentTypes)
@@ -28,4 +29,5 @@ const ComponentList = {
   ContentfulDelatBlockText: SplitTextBlock,
   ContentfulTextBlock: TextAreaBlock,
   ContentfulHeroBlock: HeroBlock,
+  ContentfulDelatBlockTextBild: SplitTextImageBlock,
 }

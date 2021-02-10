@@ -69,15 +69,12 @@ const options = {
         )
     },
     [INLINES.EMBEDDED_ENTRY]: (node, children) => {
-      if (node.data.target.__typename === "ContentfulLank") {
-        if (node.data.target.button) {
-          return (
-            <Link className="button btn-accent" to={node.data.target.url}>
-              {node.data.target.title}
-            </Link>
-          )
-        }
-        return <Link to={node.data.target.url}>{node.data.target.title}</Link>
+      if (node.data.target.__typename === "ContentfulKnapplank") {
+        return (
+          <a className="button btn-accent" href={node.data.target.url}>
+            {node.data.target.title}
+          </a>
+        )
       }
     },
   },
@@ -92,7 +89,7 @@ const heroDescriptionOptions = {
       return <Link to={node.data.uri}>{node.data.uri}</Link>
     },
     [INLINES.EMBEDDED_ENTRY]: (node, children) => {
-      if (node.data.target.__typename === "ContentfulLank") {
+      if (node.data.target.__typename === "ContentfulKnapplank") {
         if (node.data.target.button) {
           return (
             <Link className="button btn-accent" to={node.data.target.url}>
@@ -104,7 +101,7 @@ const heroDescriptionOptions = {
       }
     },
     [BLOCKS.EMBEDDED_ENTRY]: (node, children) => {
-      if (node.data.target.__typename === "ContentfulLank") {
+      if (node.data.target.__typename === "ContentfulKnapplank") {
         if (node.data.target.button) {
           return (
             <Link className="button btn-accent" to={node.data.target.url}>
@@ -458,10 +455,9 @@ export const query = graphql`
       heroDescription {
         raw
         references {
-          ... on ContentfulLank {
+          ... on ContentfulKnapplank {
             contentful_id
             __typename
-            button
             url
             title
           }
@@ -478,10 +474,9 @@ export const query = graphql`
             leftDescription {
               raw
               references {
-                ... on ContentfulLank {
+                ... on ContentfulKnapplank {
                   contentful_id
                   __typename
-                  button
                   url
                   title
                 }
@@ -490,10 +485,9 @@ export const query = graphql`
             rightDescription {
               raw
               references {
-                ... on ContentfulLank {
+                ... on ContentfulKnapplank {
                   contentful_id
                   __typename
-                  button
                   url
                   title
                 }
@@ -506,10 +500,9 @@ export const query = graphql`
             description {
               raw
               references {
-                ... on ContentfulLank {
+                ... on ContentfulKnapplank {
                   contentful_id
                   __typename
-                  button
                   url
                   title
                 }
@@ -522,10 +515,9 @@ export const query = graphql`
             description {
               raw
               references {
-                ... on ContentfulLank {
+                ... on ContentfulKnapplank {
                   contentful_id
                   __typename
-                  button
                   url
                   title
                 }

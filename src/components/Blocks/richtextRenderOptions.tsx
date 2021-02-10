@@ -51,7 +51,7 @@ const options = {
         )
     },
     [INLINES.EMBEDDED_ENTRY]: (node, children) => {
-      if (node.data.target.__typename === "ContentfulLank") {
+      if (node.data.target.__typename === "ContentfulKnapplank") {
         if (node.data.target.button) {
           return (
             <Link className="button btn-accent" to={node.data.target.url}>
@@ -63,14 +63,12 @@ const options = {
       }
     },
     [BLOCKS.EMBEDDED_ENTRY]: (node, children) => {
-      if (node.data.target.__typename === "ContentfulLank") {
-        if (node.data.target.button) {
-          return (
-            <Link className="button btn-accent" to={node.data.target.url}>
-              {node.data.target.title}
-            </Link>
-          )
-        }
+      if (node.data.target.__typename === "ContentfulKnapplank") {
+        return (
+          <Link className="button btn-accent" to={node.data.target.url}>
+            {node.data.target.title}
+          </Link>
+        )
         return <Link to={node.data.target.url}>{node.data.target.title}</Link>
       }
     },

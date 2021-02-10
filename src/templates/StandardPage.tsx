@@ -32,10 +32,9 @@ export const pageQuery = graphql`
             leftDescription {
               raw
               references {
-                ... on ContentfulLank {
+                ... on ContentfulKnapplank {
                   contentful_id
                   __typename
-                  button
                   url
                   title
                 }
@@ -44,10 +43,9 @@ export const pageQuery = graphql`
             rightDescription {
               raw
               references {
-                ... on ContentfulLank {
+                ... on ContentfulKnapplank {
                   contentful_id
                   __typename
-                  button
                   url
                   title
                 }
@@ -60,10 +58,9 @@ export const pageQuery = graphql`
             description {
               raw
               references {
-                ... on ContentfulLank {
+                ... on ContentfulKnapplank {
                   contentful_id
                   __typename
-                  button
                   url
                   title
                 }
@@ -76,10 +73,9 @@ export const pageQuery = graphql`
             description {
               raw
               references {
-                ... on ContentfulLank {
+                ... on ContentfulKnapplank {
                   contentful_id
                   __typename
-                  button
                   url
                   title
                 }
@@ -88,6 +84,25 @@ export const pageQuery = graphql`
             image {
               fixed(quality: 100, width: 2000) {
                 src
+              }
+            }
+          }
+          ... on ContentfulDelatBlockTextBild {
+            imageLeftSide
+            image {
+              fluid(quality: 100) {
+                ...GatsbyContentfulFluid_withWebp
+              }
+            }
+            description {
+              raw
+              references {
+                ... on ContentfulKnapplank {
+                  contentful_id
+                  __typename
+                  url
+                  title
+                }
               }
             }
           }

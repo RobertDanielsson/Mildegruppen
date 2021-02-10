@@ -1,6 +1,4 @@
 import React from "react"
-import { renderRichText } from "gatsby-source-contentful/rich-text"
-import options from "./richtextRenderOptions"
 import styled, { css } from "styled-components/macro"
 import RichTextRenderer from "./RichTextRenderer"
 import Container from "../container"
