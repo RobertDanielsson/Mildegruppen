@@ -46,7 +46,8 @@ const SplitTextImageBlock = ({ content }) => {
         <LeftBlock left={content.imageLeftSide}>
           <Container
             additionalStyles={`
-        @media (min-width: 900px) {
+            padding-left: 0; padding-right: 0;
+        @media (max-width: 900px) {
           padding-left: 24px; padding-right: 24px;
         }
       `}

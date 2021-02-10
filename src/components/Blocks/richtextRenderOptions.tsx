@@ -5,6 +5,7 @@ import { Link } from "gatsby"
 const options = {
   renderMark: {
     [MARKS.BOLD]: text => <strong>{text}</strong>,
+    [MARKS.ITALIC]: text => <i>{text}</i>,
   },
   renderNode: {
     [BLOCKS.PARAGRAPH]: (node, children) => {
