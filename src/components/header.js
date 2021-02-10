@@ -303,23 +303,20 @@ const Header = () => {
                   >
                     {link.title}
                   </Link>
-                  {link.childLinks && (
-                    <ul>
-                      {link.childLinks.map(childLink => {
-                        return (
-                          <li>
-                            <Link
-                              className="nav-link"
-                              activeClassName="active"
-                              to={`/${childLink.linkToPage.slug}`}
-                            >
-                              {childLink.title}
-                            </Link>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  )}
+                  {link.childLinks &&
+                    link.childLinks.map(childLink => {
+                      return (
+                        <li>
+                          <Link
+                            className="nav-link"
+                            activeClassName="active"
+                            to={`/${childLink.linkToPage.slug}`}
+                          >
+                            {childLink.title}
+                          </Link>
+                        </li>
+                      )
+                    })}
                 </li>
               )
             })}
